@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 
+
 const FlexBoxDemo = () => {
     return (
         <View style={styles.containerView}>
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
     },
     box3: {
-        backgroundColor: 'yellow',
+        backgroundColor: 'blue',
     },
 });
 
