@@ -2,6 +2,7 @@ import { StyleSheet, Platform } from "react-native";
 
 export const colors = {
     primary: "#99D7D4",
+    secondary: "#d6d6d6",
     textPrimary: "#000000",
     textSecondary: "#FFFFFF",
     background: "#FFFFFF",
@@ -43,33 +44,6 @@ export const globalStyles = StyleSheet.create({
     addButton: {
         fontSize: 24,
         color: colors.accent,
-    },
-
-    calendarContainer: {
-        paddingVertical: 20,
-        paddingHorizontal: 10,
-    },
-    dayItem: {
-        alignItems: "center",
-        marginHorizontal: 10,
-    },
-    dayText: {
-        fontSize: 16,
-        fontWeight: "bold",
-        fontFamily: Platform.select({
-            ios: "Poppins_700Bold",
-            android: "Poppins_700Bold",
-            default: "Arial",
-        }),
-    },
-    dateText: {
-        fontSize: 14,
-        color: "#555",
-        fontFamily: Platform.select({
-            ios: "Poppins_400Regular",
-            android: "Poppins_400Regular",
-            default: "Arial",
-        }),
     },
 
     mascot: {

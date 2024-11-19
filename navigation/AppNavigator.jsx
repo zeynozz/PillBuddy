@@ -21,14 +21,15 @@ const HomeStackNavigator = () => {
                 component={AddMedication}
                 options={{
                     title: "Add Medication",
-                    headerStyle: { backgroundColor: "#007BFF" },
-                    headerTintColor: "#fff",
+                    headerStyle: { backgroundColor: "#fff" },
+                    headerTintColor: "#000000",
                     headerTitleStyle: { fontWeight: "bold" },
                 }}
             />
         </Stack.Navigator>
     );
 };
+
 
 const AppNavigator = () => {
     return (
@@ -42,14 +43,18 @@ const AppNavigator = () => {
                             iconName = focused
                                 ? require("../assets/navigation/home.png")
                                 : require("../assets/navigation/home.png");
-                        } else if (route.name === "Login") {
+                        } else if (route.name === "Medications") {
                             iconName = focused
                                 ? require("../assets/navigation/drugs.png")
                                 : require("../assets/navigation/drugs.png");
-                        } else if (route.name === "Medication") {
+                        } else if (route.name === "Discover") {
                             iconName = focused
-                                ? require("../assets/navigation/drugs.png")
-                                : require("../assets/navigation/drugs.png");
+                                ? require("../assets/navigation/book.png")
+                                : require("../assets/navigation/book.png");
+                        } else if (route.name === "Service") {
+                            iconName = focused
+                                ? require("../assets/navigation/emergency-kit.png")
+                                : require("../assets/navigation/emergency-kit.png");
                         }
 
                         return (
@@ -62,7 +67,7 @@ const AppNavigator = () => {
                             />
                         );
                     },
-                    tabBarActiveTintColor: "#007BFF",
+                    tabBarActiveTintColor: "#198679",
                     tabBarInactiveTintColor: "gray",
                 })}
             >
@@ -71,8 +76,9 @@ const AppNavigator = () => {
                     component={HomeStackNavigator}
                     options={{ title: "Home" }}
                 />
-                <Tab.Screen name="Login" component={LoginPage} />
-                <Tab.Screen name="Medication" component={Medication} />
+                <Tab.Screen name="Medications" component={LoginPage} />
+                <Tab.Screen name="Discover" component={Medication} />
+                <Tab.Screen name="Service" component={Medication} />
             </Tab.Navigator>
         </NavigationContainer>
     );

@@ -1,51 +1,113 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, Image, TouchableOpacity, FlatList } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { globalStyles, colors } from "../styles/styles";
+import moment from "moment";
+import { globalStyles } from "../styles/styles";
+import homepageStyles from "../styles/homepage";
 
+const Homepage = ({ navigation }) => { // Add navigation prop here
+    const [days, setDays] = useState([]);
+    const [currentDayIndex, setCurrentDayIndex] = useState(1);
+    const flatListRef = useRef(null);
 
-const days = [
-    { id: 1, day: "Monday", date: "04.04" },
-    { id: 2, day: "Tuesday", date: "05.04" },
-    { id: 3, day: "Wednesday", date: "06.04" },
-    { id: 4, day: "Thursday", date: "07.04" },
-    { id: 5, day: "Friday", date: "08.04" },
-];
+    useEffect(() => {
+        const generateDays = () => {
+            const today = moment();
+            const tempDays = [];
 
-const Homepage = () => {
-    const navigation = useNavigation();
+            for (let i = -1; i <= 1; i++) {
+                const day = today.clone().add(i, "days");
+                tempDays.push({
+                    id: i + 1,
+                    day: day.format("dd."),
+                    date: day.format("DD.MM"),
+                    isToday: i === 0,
+                });
+            }
+            setDays(tempDays);
+        };
+
+        generateDays();
+    }, []);
 
     const renderDay = ({ item }) => (
-        <View style={globalStyles.dayItem}>
-            <Text style={globalStyles.dayText}>{item.day}</Text>
-            <Text style={globalStyles.dateText}>{item.date}</Text>
+        <View style={homepageStyles.dayWrapper}>
+            <Text
+                style={[
+                    homepageStyles.dayText,
+                    item.isToday ? homepageStyles.currentDayText : null,
+                ]}
+            >
+                {item.day}
+            </Text>
+            <Text
+                style={[
+                    homepageStyles.dateText,
+                    item.isToday ? homepageStyles.currentDateText : null,
+                ]}
+            >
+                {item.date}
+            </Text>
+            <View
+                style={[
+                    homepageStyles.dayContainer,
+                    item.isToday ? homepageStyles.currentDayContainer : null,
+                ]}
+            />
         </View>
     );
 
     return (
         <View style={globalStyles.container}>
-            {/* Top Bar */}
-            <View style={globalStyles.topBar}>
-                <TouchableOpacity>
-                    <Text style={globalStyles.profileIcon}>👤</Text>
+            <View style={homepageStyles.calendarWrapper}>
+                <TouchableOpacity
+                    style={homepageStyles.arrowButton}
+                    onPress={() => {
+                        if (flatListRef.current && currentDayIndex > 0) {
+                            const newIndex = Math.max(0, currentDayIndex - 1);
+                            flatListRef.current.scrollToIndex({ index: newIndex, animated: true });
+                            setCurrentDayIndex(newIndex);
+                        }
+                    }}
+                >
+                    <Text style={homepageStyles.arrowText}>{"<"}</Text>
                 </TouchableOpacity>
-                <Text style={globalStyles.username}>Guest</Text>
-                <TouchableOpacity>
-                    <Text style={globalStyles.addButton}>➕</Text>
+
+                <FlatList
+                    ref={flatListRef}
+                    data={days}
+                    horizontal
+                    renderItem={renderDay}
+                    keyExtractor={(item) => item.id.toString()}
+                    contentContainerStyle={homepageStyles.calendarContainer}
+                    showsHorizontalScrollIndicator={false}
+                    initialScrollIndex={currentDayIndex}
+                    getItemLayout={(data, index) => ({
+                        length: 120,
+                        offset: 120 * index,
+                        index,
+                    })}
+                    onScrollToIndexFailed={(info) => {
+                        flatListRef.current.scrollToOffset({
+                            offset: info.averageItemLength * info.index,
+                            animated: true,
+                        });
+                    }}
+                />
+
+                <TouchableOpacity
+                    style={homepageStyles.arrowButton}
+                    onPress={() => {
+                        if (flatListRef.current && currentDayIndex < days.length - 1) {
+                            const newIndex = Math.min(days.length - 1, currentDayIndex + 1);
+                            flatListRef.current.scrollToIndex({ index: newIndex, animated: true });
+                            setCurrentDayIndex(newIndex);
+                        }
+                    }}
+                >
+                    <Text style={homepageStyles.arrowText}>{">"}</Text>
                 </TouchableOpacity>
             </View>
 
-            {/* Calendar Carousel */}
-            <FlatList
-                data={days}
-                horizontal
-                renderItem={renderDay}
-                keyExtractor={(item) => item.id.toString()}
-                contentContainerStyle={globalStyles.calendarContainer}
-                showsHorizontalScrollIndicator={false}
-            />
-
-            {/* Center Content */}
             <View style={globalStyles.centerContent}>
                 <Image
                     source={require("../assets/logo.png")}
@@ -57,7 +119,7 @@ const Homepage = () => {
                 </Text>
                 <TouchableOpacity
                     style={globalStyles.addMedicationButton}
-                    onPress={() => navigation.navigate("AddMedication")}
+                    onPress={() => navigation.navigate("AddMedication")} // Use navigation here
                 >
                     <Text style={globalStyles.addMedicationButtonText}>
                         Add Medication
