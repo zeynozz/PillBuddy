@@ -1,8 +1,32 @@
-# Default ignored files
-/shelf/
-/workspace.xml
-# Editor-based HTTP Client requests
-/httpRequests/
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
+# Ignore Node.js dependencies
+node_modules/
+
+# Ignore Expo-specific files
+.expo/
+.expo-shared/
+
+# Ignore IDE configuration files
+.idea/
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore build and cache files
+build/
+dist/
+*.log
+.cache/
+*.tmp
+*.lock
+
+# Ignore environment files (if you use them)
+.env
+.env.local
+.env.production
+.env.*.local
+
+*.clang-tidy
+*.clang-format
+*.clang-format-ignore
+

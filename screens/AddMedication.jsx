@@ -1,22 +1,61 @@
-import React from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState, useContext } from "react";
+import { View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { MedicationContext } from "../context/MedicationContext";
+import medications from "./medication.json"; // Adjust the path as necessary
 
 const AddMedication = () => {
+    const [searchText, setSearchText] = useState("");
+    const [filteredMedications, setFilteredMedications] = useState([]);
+    const { addMedication } = useContext(MedicationContext);
+    const navigation = useNavigation();
+
+    const searchMedications = (text) => {
+        setSearchText(text);
+        if (text) {
+            const filtered = medications.filter((med) =>
+                med.name.toLowerCase().includes(text.toLowerCase()) ||
+                med.brandNames.some((brand) =>
+                    brand.toLowerCase().includes(text.toLowerCase())
+                )
+            );
+            setFilteredMedications(filtered);
+        } else {
+            setFilteredMedications([]);
+        }
+    };
+
+    const selectMedication = (medication) => {
+        addMedication(medication);
+        navigation.navigate("Home"); // Redirect to Homepage
+    };
+
+    const renderMedication = ({ item }) => (
+        <TouchableOpacity
+            style={styles.medicationItem}
+            onPress={() => selectMedication(item)}
+        >
+            <Text style={styles.medicationName}>{item.name}</Text>
+            <Text style={styles.medicationBrands}>
+                {item.brandNames.join(", ")}
+            </Text>
+            <Text style={styles.medicationDescription}>{item.description}</Text>
+        </TouchableOpacity>
+    );
+
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.headerText}>Which medication would you like to add?</Text>
-            </View>
-
-            <View style={styles.inputContainer}>
-                <TextInput
-                    style={styles.textInput}
-                    placeholder="Enter medication name"
-                />
-                <TouchableOpacity style={styles.searchButton}>
-                    <Text style={styles.searchButtonText}>🔍</Text>
-                </TouchableOpacity>
-            </View>
+            <TextInput
+                style={styles.textInput}
+                placeholder="Enter medication name"
+                value={searchText}
+                onChangeText={searchMedications}
+            />
+            <FlatList
+                data={filteredMedications}
+                renderItem={renderMedication}
+                keyExtractor={(item) => item.id.toString()}
+            />
         </View>
     );
 };
@@ -27,41 +66,29 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: "#fff",
     },
-    header: {
-        backgroundColor: "#e0f7fa",
-        padding: 20,
-        borderRadius: 10,
+    textInput: {
+        height: 40,
+        borderColor: "#ccc",
+        borderWidth: 1,
+        paddingLeft: 8,
         marginBottom: 20,
     },
-    headerText: {
+    medicationItem: {
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: "#eee",
+    },
+    medicationName: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "#333",
     },
-    inputContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        borderWidth: 1,
-        borderColor: "#a7e0e2",
-        borderRadius: 5,
-        padding: 10,
-        backgroundColor: "#fff",
-    },
-    textInput: {
-        flex: 1,
-        height: 40,
+    medicationBrands: {
         fontSize: 16,
-        paddingHorizontal: 10,
+        color: "#555",
     },
-    searchButton: {
-        padding: 10,
-        backgroundColor: "#a7e0e2",
-        borderRadius: 5,
-    },
-    searchButtonText: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: "#fff",
+    medicationDescription: {
+        fontSize: 14,
+        color: "#777",
     },
 });
 

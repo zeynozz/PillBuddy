@@ -12,10 +12,15 @@ import AddMedication from "../screens/AddMedication";
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+// Stack Navigator for Home
 const HomeStackNavigator = () => {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Home" component={Homepage} />
+            <Stack.Screen
+                name="Home"
+                component={Homepage}
+                options={{ headerShown: false }} // Hide header for Home
+            />
             <Stack.Screen
                 name="AddMedication"
                 component={AddMedication}
@@ -30,6 +35,30 @@ const HomeStackNavigator = () => {
     );
 };
 
+// Stack Navigator for Medication
+const MedicationStackNavigator = () => {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen
+                name="Medication"
+                component={Medication}
+                options={{ headerShown: false }} // Hide header for Medication
+            />
+            <Stack.Screen
+                name="AddMedication"
+                component={AddMedication}
+                options={{
+                    title: "Add Medication",
+                    headerStyle: { backgroundColor: "#007BFF" },
+                    headerTintColor: "#fff",
+                    headerTitleStyle: { fontWeight: "bold" },
+                }}
+            />
+        </Stack.Navigator>
+    );
+};
+
+// Main Tab Navigator
 const AppNavigator = () => {
     return (
         <NavigationContainer>
@@ -39,17 +68,11 @@ const AppNavigator = () => {
                         let iconName;
 
                         if (route.name === "Home") {
-                            iconName = focused
-                                ? require("../assets/navigation/home.png")
-                                : require("../assets/navigation/home.png");
+                            iconName = require("../assets/navigation/home.png");
                         } else if (route.name === "Login") {
-                            iconName = focused
-                                ? require("../assets/navigation/drugs.png")
-                                : require("../assets/navigation/drugs.png");
+                            iconName = require("../assets/navigation/drugs.png");
                         } else if (route.name === "Medication") {
-                            iconName = focused
-                                ? require("../assets/navigation/drugs.png")
-                                : require("../assets/navigation/drugs.png");
+                            iconName = require("../assets/navigation/drugs.png");
                         }
 
                         return (
@@ -58,6 +81,7 @@ const AppNavigator = () => {
                                 style={{
                                     width: 24,
                                     height: 24,
+                                    tintColor: focused ? "#007BFF" : "gray",
                                 }}
                             />
                         );
@@ -72,7 +96,11 @@ const AppNavigator = () => {
                     options={{ title: "Home" }}
                 />
                 <Tab.Screen name="Login" component={LoginPage} />
-                <Tab.Screen name="Medication" component={Medication} />
+                <Tab.Screen
+                    name="Medication"
+                    component={MedicationStackNavigator}
+                    options={{ title: "Medication" }}
+                />
             </Tab.Navigator>
         </NavigationContainer>
     );
