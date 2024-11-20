@@ -12,7 +12,8 @@ import {
     Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
+import { saveMedication } from "../database/storage";
+
 
 const AddMedication = () => {
     const [currentStep, setCurrentStep] = useState(0);
@@ -80,63 +81,51 @@ const AddMedication = () => {
         }
     };
 
+
     const handleNext = async () => {
         if (currentStep < steps.length - 1) {
             setCurrentStep(currentStep + 1);
         } else {
-            // Daten speichern, wenn alle Schritte abgeschlossen sind
-            await saveMedication();
+            const combinedTime = `${formData.dosageTimeHour}:${formData.dosageTimeMinute}`;
+            const medicationData = {
+                ...formData,
+                dosageTime: combinedTime,
+            };
+
+            console.log("Speichere folgende Daten in Firebase:", medicationData);
+
+            try {
+                const docId = await saveMedication(medicationData);
+                console.log("Daten erfolgreich gespeichert mit ID:", docId);
+                Alert.alert("Success", "Medication saved successfully in Firebase!");
+
+                setFormData({
+                    medicationName: "",
+                    medicationForm: "",
+                    dosageFrequency: "",
+                    dosageTimeHour: "08",
+                    dosageTimeMinute: "00",
+                    additionalInfo: {
+                        isRequired: false,
+                        description: "",
+                    },
+                    refillReminder: {
+                        enabled: false,
+                        currentStock: "",
+                        threshold: "",
+                    },
+                });
+                setCurrentStep(0);
+            } catch (error) {
+                console.error("Fehler beim Speichern in Firebase:", error);
+                Alert.alert("Error", "Failed to save medication.");
+            }
         }
     };
 
     const handleBack = () => {
         if (currentStep > 0) {
             setCurrentStep(currentStep - 1);
-        }
-    };
-
-    // Funktion, um Daten in AsyncStorage zu speichern
-    const saveMedication = async () => {
-        const combinedTime = `${formData.dosageTimeHour}:${formData.dosageTimeMinute}`;
-        const medicationData = {
-            ...formData,
-            dosageTime: combinedTime,
-        };
-
-        try {
-            // Bestehende Medikamente abrufen
-            const existingData = await AsyncStorage.getItem("medications");
-            const medications = existingData ? JSON.parse(existingData) : [];
-
-            // Neues Medikament hinzufügen
-            medications.push(medicationData);
-
-            // Daten speichern
-            await AsyncStorage.setItem("medications", JSON.stringify(medications));
-
-            Alert.alert("Success", "Medication saved successfully!");
-
-            // Formular zurücksetzen
-            setFormData({
-                medicationName: "",
-                medicationForm: "",
-                dosageFrequency: "",
-                dosageTimeHour: "08",
-                dosageTimeMinute: "00",
-                additionalInfo: {
-                    isRequired: false,
-                    description: "",
-                },
-                refillReminder: {
-                    enabled: false,
-                    currentStock: "",
-                    threshold: "",
-                },
-            });
-            setCurrentStep(0);
-        } catch (error) {
-            console.error("Error saving medication:", error);
-            Alert.alert("Error", "Failed to save medication.");
         }
     };
 
@@ -315,7 +304,6 @@ const AddMedication = () => {
                             </>
                         )}
                     </View>
-
                 )}
             </View>
 
@@ -334,7 +322,6 @@ const AddMedication = () => {
         </KeyboardAvoidingView>
     );
 };
-
 
 const styles = StyleSheet.create({
     container: {
