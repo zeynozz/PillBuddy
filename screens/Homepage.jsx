@@ -4,7 +4,7 @@ import moment from "moment";
 import { globalStyles } from "../styles/styles";
 import homepageStyles from "../styles/homepage";
 
-const Homepage = ({ navigation }) => { // Add navigation prop here
+const Homepage = ({ navigation }) => {
     const [days, setDays] = useState([]);
     const [currentDayIndex, setCurrentDayIndex] = useState(1);
     const flatListRef = useRef(null);
@@ -119,7 +119,7 @@ const Homepage = ({ navigation }) => { // Add navigation prop here
                 </Text>
                 <TouchableOpacity
                     style={globalStyles.addMedicationButton}
-                    onPress={() => navigation.navigate("AddMedication")} // Use navigation here
+                    onPress={() => navigation.navigate("Medications", { screen: "AddMedication" })}
                 >
                     <Text style={globalStyles.addMedicationButtonText}>
                         Add Medication

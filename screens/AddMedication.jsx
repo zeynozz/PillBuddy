@@ -9,8 +9,10 @@ import {
     KeyboardAvoidingView,
     Platform,
     Switch,
+    Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
 
 const AddMedication = () => {
     const [currentStep, setCurrentStep] = useState(0);
@@ -78,21 +80,63 @@ const AddMedication = () => {
         }
     };
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (currentStep < steps.length - 1) {
             setCurrentStep(currentStep + 1);
         } else {
-            const combinedTime = `${formData.dosageTimeHour}:${formData.dosageTimeMinute}`;
-            console.log("Form Data:", {
-                ...formData,
-                dosageTime: combinedTime,
-            });
+            // Daten speichern, wenn alle Schritte abgeschlossen sind
+            await saveMedication();
         }
     };
 
     const handleBack = () => {
         if (currentStep > 0) {
             setCurrentStep(currentStep - 1);
+        }
+    };
+
+    // Funktion, um Daten in AsyncStorage zu speichern
+    const saveMedication = async () => {
+        const combinedTime = `${formData.dosageTimeHour}:${formData.dosageTimeMinute}`;
+        const medicationData = {
+            ...formData,
+            dosageTime: combinedTime,
+        };
+
+        try {
+            // Bestehende Medikamente abrufen
+            const existingData = await AsyncStorage.getItem("medications");
+            const medications = existingData ? JSON.parse(existingData) : [];
+
+            // Neues Medikament hinzufügen
+            medications.push(medicationData);
+
+            // Daten speichern
+            await AsyncStorage.setItem("medications", JSON.stringify(medications));
+
+            Alert.alert("Success", "Medication saved successfully!");
+
+            // Formular zurücksetzen
+            setFormData({
+                medicationName: "",
+                medicationForm: "",
+                dosageFrequency: "",
+                dosageTimeHour: "08",
+                dosageTimeMinute: "00",
+                additionalInfo: {
+                    isRequired: false,
+                    description: "",
+                },
+                refillReminder: {
+                    enabled: false,
+                    currentStock: "",
+                    threshold: "",
+                },
+            });
+            setCurrentStep(0);
+        } catch (error) {
+            console.error("Error saving medication:", error);
+            Alert.alert("Error", "Failed to save medication.");
         }
     };
 

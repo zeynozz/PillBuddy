@@ -5,7 +5,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { Image } from "react-native";
 
 import Homepage from "../screens/Homepage";
-import LoginPage from "../screens/LoginPage";
 import Medication from "../screens/Medication";
 import AddMedication from "../screens/AddMedication";
 
@@ -15,7 +14,11 @@ const Stack = createStackNavigator();
 const HomeStackNavigator = () => {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Home" component={Homepage} />
+            <Stack.Screen
+                name="Home"
+                component={Homepage}
+                options={{ title: "Home" }}
+            />
             <Stack.Screen
                 name="AddMedication"
                 component={AddMedication}
@@ -30,6 +33,27 @@ const HomeStackNavigator = () => {
     );
 };
 
+const MedicationsStackNavigator = () => {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen
+                name="MedicationsList"
+                component={Medication}
+                options={{ title: "Medications" }}
+            />
+            <Stack.Screen
+                name="AddMedication"
+                component={AddMedication}
+                options={{
+                    title: "Add Medication",
+                    headerStyle: { backgroundColor: "#fff" },
+                    headerTintColor: "#000000",
+                    headerTitleStyle: { fontWeight: "bold" },
+                }}
+            />
+        </Stack.Navigator>
+    );
+};
 
 const AppNavigator = () => {
     return (
@@ -76,9 +100,21 @@ const AppNavigator = () => {
                     component={HomeStackNavigator}
                     options={{ title: "Home" }}
                 />
-                <Tab.Screen name="Medications" component={LoginPage} />
-                <Tab.Screen name="Discover" component={Medication} />
-                <Tab.Screen name="Service" component={Medication} />
+                <Tab.Screen
+                    name="Medications"
+                    component={MedicationsStackNavigator}
+                    options={{ title: "Medications" }}
+                />
+                <Tab.Screen
+                    name="Discover"
+                    component={Medication}
+                    options={{ title: "Discover" }}
+                />
+                <Tab.Screen
+                    name="Service"
+                    component={Medication}
+                    options={{ title: "Service" }}
+                />
             </Tab.Navigator>
         </NavigationContainer>
     );
