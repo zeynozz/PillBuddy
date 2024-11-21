@@ -1,14 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-    View,
-    Text,
-    Image,
-    TouchableOpacity,
-    FlatList,
-    ActivityIndicator,
-    Modal,
-    StyleSheet,
-} from "react-native";
+import { View, Text, Image, TouchableOpacity, FlatList, ActivityIndicator, Modal, StyleSheet, Alert } from "react-native";
 import moment from "moment";
 import { globalStyles } from "../styles/styles";
 import homepageStyles from "../styles/homepage";
@@ -21,11 +12,9 @@ const Homepage = ({ navigation }) => {
     const flatListRef = useRef(null);
     const [medications, setMedications] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showWelcome, setShowWelcome] = useState(true);
-
-    // State for modal
-    const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedMedication, setSelectedMedication] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [isDayComplete, setIsDayComplete] = useState(false);
 
     useEffect(() => {
         const generateDays = () => {
@@ -52,6 +41,7 @@ const Homepage = ({ navigation }) => {
             setLoading(true);
             const fetchedMedications = await fetchMedications();
             setMedications(fetchedMedications);
+            checkDayCompletion(fetchedMedications);
         } catch (error) {
             console.error("Error fetching medications:", error);
         } finally {
@@ -59,11 +49,13 @@ const Homepage = ({ navigation }) => {
         }
     };
 
-    useFocusEffect(
-        React.useCallback(() => {
-            loadMedications();
-        }, [])
-    );
+    const checkDayCompletion = (meds) => {
+        const todayMeds = meds.filter((med) => med.dosageDate === moment().format("YYYY-MM-DD"));
+        const allComplete = todayMeds.length > 0 && todayMeds.every((med) => med.confirmed || med.skipped);
+
+        setIsDayComplete(allComplete);
+    };
+
 
     const groupMedicationsByTime = () => {
         const grouped = {};
@@ -80,14 +72,41 @@ const Homepage = ({ navigation }) => {
             .map((time) => ({ time, medications: grouped[time] }));
     };
 
-    const handleAddMedication = () => {
-        setShowWelcome(false);
-        navigation.navigate("AddMedication");
+
+    useFocusEffect(
+        React.useCallback(() => {
+            loadMedications();
+        }, [])
+    );
+
+    const handleSkip = (medication) => {
+        const currentTime = moment().format("HH:mm");
+        setMedications((prevMedications) => {
+            const updatedMeds = prevMedications.map((med) =>
+                med.id === medication.id
+                    ? { ...med, skipped: true, skippedTime: currentTime, confirmed: false }
+                    : med
+            );
+            checkDayCompletion(updatedMeds);
+            return updatedMeds;
+        });
+        setModalVisible(false);
+        Alert.alert("Skipped", `${medication.medicationName} was skipped.`);
     };
 
-    const handleAlertClick = (medication) => {
-        setSelectedMedication(medication);
-        setIsModalVisible(true);
+    const handleConfirm = (medication) => {
+        const currentTime = moment().format("HH:mm");
+        setMedications((prevMedications) => {
+            const updatedMeds = prevMedications.map((med) =>
+                med.id === medication.id
+                    ? { ...med, confirmed: true, confirmedTime: currentTime, skipped: false }
+                    : med
+            );
+            checkDayCompletion(updatedMeds);
+            return updatedMeds;
+        });
+        setModalVisible(false);
+        Alert.alert("Confirmed", `${medication.medicationName} was confirmed.`);
     };
 
     const renderDay = ({ item }) => (
@@ -113,34 +132,57 @@ const Homepage = ({ navigation }) => {
                     homepageStyles.dayContainer,
                     item.isToday ? homepageStyles.currentDayContainer : null,
                 ]}
-            />
+            >
+                {item.isToday && isDayComplete ? (
+                    <Image
+                        source={require("../assets/accept.png")} //
+                        style={homepageStyles.calendarIcon}
+                    />
+                ) : null}
+            </View>
         </View>
     );
 
-    const renderMedication = ({ item }) => (
-        <View style={homepageStyles.medicationItem} key={item.id}>
-            <View style={homepageStyles.leftSection}>
-                <Image
-                    source={require("../assets/fancyPill.png")}
-                    style={homepageStyles.pillIcon}
-                />
-                <View>
-                    <Text style={homepageStyles.medicationName}>{item.medicationName}</Text>
-                    <Text style={homepageStyles.medicationDetails}>
-                        {item.dosageFrequency || "N/A"} {item.medicationForm || ""} @ {item.dosageTime}
-                    </Text>
+    const renderMedication = ({ item }) => {
+        let iconSource = require("../assets/alert.png");
+        let actionText = null;
+
+        if (item.skipped) {
+            iconSource = require("../assets/cancel.png");
+            actionText = `Skipped at ${item.skippedTime}, today`;
+        } else if (item.confirmed) {
+            iconSource = require("../assets/accept.png");
+            actionText = `Taken at ${item.confirmedTime}, today`;
+        }
+
+        return (
+            <View style={homepageStyles.medicationItem} key={item.id}>
+                <View style={homepageStyles.leftSection}>
+                    <Image
+                        source={require("../assets/fancyPill.png")}
+                        style={homepageStyles.pillIcon}
+                    />
+                    <View>
+                        <Text style={homepageStyles.medicationName}>{item.medicationName}</Text>
+                        <Text style={homepageStyles.medicationDetails}>
+                            {actionText || `${item.dosageFrequency || "N/A"} ${item.medicationForm || ""} @ ${item.dosageTime}`}
+                        </Text>
+                    </View>
                 </View>
+                <TouchableOpacity
+                    onPress={() => {
+                        setSelectedMedication(item);
+                        setModalVisible(true);
+                    }}
+                >
+                    <Image
+                        source={iconSource}
+                        style={homepageStyles.alertIcon}
+                    />
+                </TouchableOpacity>
             </View>
-            <TouchableOpacity
-                onPress={() => handleAlertClick(item)}
-            >
-                <Image
-                    source={require("../assets/alert.png")}
-                    style={homepageStyles.alertIcon}
-                />
-            </TouchableOpacity>
-        </View>
-    );
+        );
+    };
 
     const renderGroupedMedications = ({ item }) => (
         <View style={homepageStyles.groupedMedications} key={item.time}>
@@ -151,42 +193,6 @@ const Homepage = ({ navigation }) => {
 
     return (
         <View style={globalStyles.container}>
-            {/* Modal for Medication */}
-            <Modal
-                visible={isModalVisible}
-                transparent={true}
-                animationType="slide"
-                onRequestClose={() => setIsModalVisible(false)}
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <TouchableOpacity
-                            style={styles.closeButton}
-                            onPress={() => setIsModalVisible(false)}
-                        >
-                            <Text style={styles.closeText}>X</Text>
-                        </TouchableOpacity>
-                        {selectedMedication && (
-                            <>
-                                <Image
-                                    source={require("../assets/fancyPill.png")}
-                                    style={styles.modalPillIcon}
-                                />
-                                <Text style={styles.modalMedicationName}>
-                                    {selectedMedication.medicationName}
-                                </Text>
-                                <Text style={styles.modalDetails}>
-                                    Planned for {selectedMedication.dosageTime}, today
-                                </Text>
-                                <Text style={styles.modalDetails}>
-                                    {selectedMedication.dosageFrequency}
-                                </Text>
-                            </>
-                        )}
-                    </View>
-                </View>
-            </Modal>
-
             {/* Calendar */}
             <View style={homepageStyles.calendarWrapper}>
                 <TouchableOpacity
@@ -231,25 +237,6 @@ const Homepage = ({ navigation }) => {
             <View style={globalStyles.centerContent}>
                 {loading ? (
                     <ActivityIndicator size="large" color="#198679" />
-                ) : showWelcome && medications.length === 0 ? (
-                    <>
-                        <Image
-                            source={require("../assets/logo.png")}
-                            style={globalStyles.mascot}
-                        />
-                        <Text style={globalStyles.headerText}>Welcome to PillBuddy!</Text>
-                        <Text style={globalStyles.normalText}>
-                            You are all signed up! Let’s get started!
-                        </Text>
-                        <TouchableOpacity
-                            style={globalStyles.addMedicationButton}
-                            onPress={handleAddMedication}
-                        >
-                            <Text style={globalStyles.addMedicationButtonText}>
-                                Add Medication
-                            </Text>
-                        </TouchableOpacity>
-                    </>
                 ) : (
                     <FlatList
                         data={groupMedicationsByTime()}
@@ -259,11 +246,75 @@ const Homepage = ({ navigation }) => {
                     />
                 )}
             </View>
+
+            {/* Modal */}
+            {selectedMedication && (
+                <Modal
+                    transparent={true}
+                    animationType="slide"
+                    visible={modalVisible}
+                    onRequestClose={() => setModalVisible(false)}
+                >
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            <TouchableOpacity
+                                style={styles.closeButton}
+                                onPress={() => setModalVisible(false)}
+                            >
+                                <Text style={styles.closeButtonText}>✕</Text>
+                            </TouchableOpacity>
+                            <Image
+                                source={require("../assets/fancyPill.png")}
+                                style={styles.modalPillIcon}
+                            />
+                            <Text style={styles.modalHeaderText}>
+                                {selectedMedication.medicationName}
+                            </Text>
+                            <Text style={styles.modalDetailsText}>
+                                Planned for {selectedMedication.dosageTime}, today
+                            </Text>
+                            <Text style={styles.modalDetailsText}>
+                                {selectedMedication.dosageFrequency || "N/A"}
+                            </Text>
+                            <View style={styles.actionButtonsContainer}>
+                                <TouchableOpacity
+                                    style={styles.actionButton}
+                                    onPress={() => handleSkip(selectedMedication)}
+                                >
+                                    <Image
+                                        source={require("../assets/cancel.png")}
+                                        style={styles.icon}
+                                    />
+                                    <Text style={styles.actionButtonText}>Skip</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.actionButton}
+                                    onPress={() => handleConfirm(selectedMedication)}
+                                >
+                                    <Image
+                                        source={require("../assets/accept.png")}
+                                        style={styles.icon}
+                                    />
+                                    <Text style={styles.actionButtonText}>Confirm</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.actionButton}
+                                    onPress={() => navigation.navigate("AddMedication", { medication: selectedMedication })}
+                                >
+                                    <Image
+                                        source={require("../assets/clock.png")}
+                                        style={styles.icon}
+                                    />
+                                    <Text style={styles.actionButtonText}>Plan New</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
+            )}
         </View>
     );
 };
-
-export default Homepage;
 
 const styles = StyleSheet.create({
     modalContainer: {
@@ -274,16 +325,17 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         width: "80%",
-        backgroundColor: "white",
-        borderRadius: 10,
         padding: 20,
+        backgroundColor: "#fff",
+        borderRadius: 10,
         alignItems: "center",
     },
     closeButton: {
-        alignSelf: "flex-end",
-        marginBottom: 10,
+        position: "absolute",
+        top: 10,
+        right: 10,
     },
-    closeText: {
+    closeButtonText: {
         fontSize: 18,
         fontWeight: "bold",
         color: "#000",
@@ -291,14 +343,40 @@ const styles = StyleSheet.create({
     modalPillIcon: {
         width: 50,
         height: 50,
+        marginBottom: 10,
     },
-    modalMedicationName: {
-        fontSize: 18,
+    modalHeaderText: {
+        fontSize: 20,
         fontWeight: "bold",
-        marginVertical: 10,
+        marginBottom: 10,
     },
-    modalDetails: {
+    modalDetailsText: {
         fontSize: 16,
-        marginVertical: 5,
+        color: "#666",
+        textAlign: "center",
+        marginBottom: 10,
+    },
+    actionButtonsContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 20,
+    },
+    actionButton: {
+        padding: 10,
+        borderRadius: 8,
+        marginHorizontal: 5,
+        alignItems: "center",
+    },
+    actionButtonText: {
+        fontSize: 16,
+        fontWeight: "bold",
+        textAlign: "center",
+    },
+    icon: {
+        width: 50,
+        height: 50,
+        marginBottom: 10,
     },
 });
+
+export default Homepage;
