@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { StyleSheet, SafeAreaView } from "react-native";
 import AppNavigator from "./navigation/AppNavigator";
 import { db } from "./database/firebaseConfig";
+import {MedicationProvider} from "./context/MedicationContext";
 
 export default function App() {
   useEffect(() => {
@@ -10,7 +11,10 @@ export default function App() {
 
   return (
       <SafeAreaView style={styles.container}>
-        <AppNavigator />
+
+        <MedicationProvider>
+          <AppNavigator />
+        </MedicationProvider>
       </SafeAreaView>
   );
 }

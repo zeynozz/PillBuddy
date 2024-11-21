@@ -10,13 +10,19 @@ import {
     Platform,
     Switch,
     Alert,
+    FlatList,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { saveMedication } from "../database/storage";
+import medications from "./medication.json";
+import { useNavigation } from "@react-navigation/native";
 
 
 const AddMedication = () => {
+    const navigation = useNavigation();
     const [currentStep, setCurrentStep] = useState(0);
+    const [searchText, setSearchText] = useState("");
+    const [filteredMedications, setFilteredMedications] = useState([]);
     const [formData, setFormData] = useState({
         medicationName: "",
         medicationForm: "",
@@ -38,7 +44,7 @@ const AddMedication = () => {
         {
             question: "Which medication would you like to add?",
             inputType: "text",
-            placeholder: "Add Medication",
+            placeholder: "Search for a medication",
             key: "medicationName",
         },
         {
@@ -81,44 +87,19 @@ const AddMedication = () => {
         }
     };
 
-
     const handleNext = async () => {
         if (currentStep < steps.length - 1) {
             setCurrentStep(currentStep + 1);
         } else {
-            const combinedTime = `${formData.dosageTimeHour}:${formData.dosageTimeMinute}`;
-            const medicationData = {
-                ...formData,
-                dosageTime: combinedTime,
-            };
-
-            console.log("Speichere folgende Daten in Firebase:", medicationData);
-
             try {
-                const docId = await saveMedication(medicationData);
-                console.log("Daten erfolgreich gespeichert mit ID:", docId);
-                Alert.alert("Success", "Medication saved successfully in Firebase!");
+                const docId = await saveMedication(formData);
+                console.log("Daten erfolgreich in Firebase gespeichert mit ID:", docId);
+                Alert.alert("Success", "Medication saved successfully!");
+                navigation.navigate("Medications");
 
-                setFormData({
-                    medicationName: "",
-                    medicationForm: "",
-                    dosageFrequency: "",
-                    dosageTimeHour: "08",
-                    dosageTimeMinute: "00",
-                    additionalInfo: {
-                        isRequired: false,
-                        description: "",
-                    },
-                    refillReminder: {
-                        enabled: false,
-                        currentStock: "",
-                        threshold: "",
-                    },
-                });
-                setCurrentStep(0);
             } catch (error) {
-                console.error("Fehler beim Speichern in Firebase:", error);
-                Alert.alert("Error", "Failed to save medication.");
+                console.error("Fehler beim Speichern der Daten:", error);
+                Alert.alert("Error", "Failed to save medication. Please try again.");
             }
         }
     };
@@ -127,6 +108,27 @@ const AddMedication = () => {
         if (currentStep > 0) {
             setCurrentStep(currentStep - 1);
         }
+    };
+
+    const searchMedications = (text) => {
+        setSearchText(text);
+        if (text) {
+            const filtered = medications.filter((med) =>
+                med.name.toLowerCase().includes(text.toLowerCase()) ||
+                med.brandNames.some((brand) =>
+                    brand.toLowerCase().includes(text.toLowerCase())
+                )
+            );
+            setFilteredMedications(filtered);
+        } else {
+            setFilteredMedications([]);
+        }
+    };
+
+    const selectMedication = (medication) => {
+        setFormData({ ...formData, medicationName: medication.name });
+        setFilteredMedications([]);
+        setSearchText("");
     };
 
     return (
@@ -146,36 +148,32 @@ const AddMedication = () => {
             </View>
 
             <View style={styles.inputSection}>
-                {steps[currentStep].inputType === "text" && (
-                    <TextInput
-                        placeholder={steps[currentStep].placeholder}
-                        value={formData[steps[currentStep].key]}
-                        onChangeText={(text) =>
-                            handleInputChange(steps[currentStep].key, text)
-                        }
-                        style={styles.input}
-                    />
-                )}
-
-                {steps[currentStep].inputType === "options" &&
-                    steps[currentStep].options.map((option, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            style={styles.radioOptionContainer}
-                            onPress={() =>
-                                handleInputChange(steps[currentStep].key, option)
-                            }
-                        >
-                            <View style={styles.radioButton}>
-                                {formData[steps[currentStep].key] === option && (
-                                    <View style={styles.radioButtonSelected} />
-                                )}
-                            </View>
-                            <Text style={styles.radioOptionText}>{option}</Text>
-                        </TouchableOpacity>
-                    ))}
-
-                {steps[currentStep].inputType === "time" && (
+                {currentStep === 0 ? (
+                    <>
+                        <TextInput
+                            style={styles.textInput}
+                            placeholder={steps[currentStep].placeholder}
+                            value={searchText || formData.medicationName}
+                            onChangeText={searchMedications}
+                        />
+                        <FlatList
+                            data={filteredMedications}
+                            keyExtractor={(item) => item.id.toString()}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity
+                                    style={styles.medicationItem}
+                                    onPress={() => selectMedication(item)}
+                                >
+                                    <Text style={styles.medicationName}>{item.name}</Text>
+                                    <Text style={styles.medicationDetails}>
+                                        {item.brandNames.join(", ")}
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
+                            style={styles.medicationList}
+                        />
+                    </>
+                ) : currentStep === 3 ? (
                     <View style={styles.timePickerContainer}>
                         <Picker
                             selectedValue={formData.dosageTimeHour}
@@ -209,17 +207,10 @@ const AddMedication = () => {
                             ))}
                         </Picker>
                     </View>
-                )}
-
-                {steps[currentStep].inputType === "additional" && (
+                ) : currentStep === 4 ? (
                     <View>
                         <TouchableOpacity
-                            style={[
-                                styles.radioOptionContainer,
-                                formData.additionalInfo.isRequired
-                                    ? styles.selectedOption
-                                    : null,
-                            ]}
+                            style={styles.radioOptionContainer}
                             onPress={() =>
                                 handleInputChange("additionalInfo", { isRequired: true })
                             }
@@ -229,15 +220,10 @@ const AddMedication = () => {
                                     <View style={styles.radioButtonSelected} />
                                 )}
                             </View>
-                            <Text style={styles.radioOptionText}>Yes</Text>
+                            <Text style={styles.radioOptionText}>Yes, this medication needs to be taken with something additional.</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={[
-                                styles.radioOptionContainer,
-                                !formData.additionalInfo.isRequired
-                                    ? styles.selectedOption
-                                    : null,
-                            ]}
+                            style={styles.radioOptionContainer}
                             onPress={() =>
                                 handleInputChange("additionalInfo", { isRequired: false })
                             }
@@ -247,64 +233,75 @@ const AddMedication = () => {
                                     <View style={styles.radioButtonSelected} />
                                 )}
                             </View>
-                            <Text style={styles.radioOptionText}>No</Text>
+                            <Text style={styles.radioOptionText}>No, this medication does not need to be taken      with something additional.</Text>
                         </TouchableOpacity>
                         {formData.additionalInfo.isRequired && (
                             <TextInput
                                 placeholder="Enter additional details"
+                                style={styles.textInput}
                                 value={formData.additionalInfo.description}
                                 onChangeText={(text) =>
-                                    handleInputChange("additionalInfo", {
-                                        description: text,
-                                    })
+                                    handleInputChange("additionalInfo", { description: text })
                                 }
-                                style={styles.input}
                             />
                         )}
                     </View>
-                )}
-
-                {steps[currentStep].inputType === "refill" && (
-                    <View style={styles.refillContainer}>
-                        <View style={styles.switchRow}>
-                            <Text style={styles.switchLabel}>Enable Refill Reminder</Text>
-                            <Switch
-                                value={formData.refillReminder.enabled}
-                                onValueChange={(value) =>
-                                    handleInputChange("refillReminder", { enabled: value })
-                                }
-                            />
+                ) : currentStep === 5 ? (
+                        <View style={styles.refillContainer}>
+                            <View style={styles.switchRow}>
+                                <Text style={styles.switchLabel}>Enable Refill Reminder</Text>
+                                <Switch
+                                    value={formData.refillReminder.enabled}
+                                    onValueChange={(value) =>
+                                        handleInputChange("refillReminder", { enabled: value })
+                                    }
+                                />
+                            </View>
+                            {formData.refillReminder.enabled && (
+                                <View style={styles.refillInputs}>
+                                    <View style={styles.inputGroup}>
+                                        <Text style={styles.inputLabel}>Current Stock</Text>
+                                        <TextInput
+                                            placeholder="e.g. 30 tablets"
+                                            style={styles.textInput}
+                                            value={formData.refillReminder.currentStock}
+                                            onChangeText={(text) =>
+                                                handleInputChange("refillReminder", { currentStock: text })
+                                            }
+                                            keyboardType="numeric"
+                                        />
+                                    </View>
+                                    <View style={styles.inputGroup}>
+                                        <Text style={styles.inputLabel}>Threshold</Text>
+                                        <TextInput
+                                            placeholder="e.g. 10 tablets"
+                                            style={styles.textInput}
+                                            value={formData.refillReminder.threshold}
+                                            onChangeText={(text) =>
+                                                handleInputChange("refillReminder", { threshold: text })
+                                            }
+                                            keyboardType="numeric"
+                                        />
+                                    </View>
+                                </View>
+                            )}
                         </View>
-                        {formData.refillReminder.enabled && (
-                            <>
-                                <View style={styles.inputRow}>
-                                    <Text style={styles.inputLabel}>Current Stock</Text>
-                                    <TextInput
-                                        placeholder="e.g. 30 tablets"
-                                        value={formData.refillReminder.currentStock}
-                                        onChangeText={(text) =>
-                                            handleInputChange("refillReminder", { currentStock: text })
-                                        }
-                                        style={styles.input}
-                                        keyboardType="numeric"
-                                    />
-                                </View>
-                                <View style={styles.inputRow}>
-                                    <Text style={styles.inputLabel}>Reminder Threshold</Text>
-                                    <TextInput
-                                        placeholder="e.g. 10 tablets"
-                                        value={formData.refillReminder.threshold}
-                                        onChangeText={(text) =>
-                                            handleInputChange("refillReminder", { threshold: text })
-                                        }
-                                        style={styles.input}
-                                        keyboardType="numeric"
-                                    />
-                                </View>
-                            </>
-                        )}
-                    </View>
-                )}
+                    ) : steps[currentStep].inputType === "options" ? (
+                    steps[currentStep].options.map((option, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            style={styles.radioOptionContainer}
+                            onPress={() => handleInputChange(steps[currentStep].key, option)}
+                        >
+                            <View style={styles.radioButton}>
+                                {formData[steps[currentStep].key] === option && (
+                                    <View style={styles.radioButtonSelected} />
+                                )}
+                            </View>
+                            <Text style={styles.radioOptionText}>{option}</Text>
+                        </TouchableOpacity>
+                    ))
+                ) : null}
             </View>
 
             <View style={styles.buttonContainer}>
@@ -322,6 +319,7 @@ const AddMedication = () => {
         </KeyboardAvoidingView>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {
@@ -342,6 +340,11 @@ const styles = StyleSheet.create({
         height: 60,
         marginBottom: 10,
     },
+    headerText: {
+        fontSize: 20,
+        fontWeight: "bold",
+        color: "#ffffff",
+    },
     progressText: {
         fontSize: 16,
         color: "#000",
@@ -353,14 +356,33 @@ const styles = StyleSheet.create({
     inputSection: {
         marginVertical: 20,
     },
-    input: {
+    textInput: {
         borderWidth: 1,
         borderColor: "#B3B3B3",
         padding: 10,
         borderRadius: 5,
         backgroundColor: "#fff",
         fontSize: 16,
-        color: "#2D2D2D",
+    },
+    medicationList: {
+        marginTop: 10,
+        maxHeight: 200,
+    },
+    medicationItem: {
+        padding: 15,
+        backgroundColor: "#fff",
+        borderRadius: 5,
+        borderColor: "#ccc",
+        borderWidth: 1,
+        marginBottom: 5,
+    },
+    medicationName: {
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    medicationDetails: {
+        fontSize: 14,
+        color: "#555",
     },
     radioOptionContainer: {
         flexDirection: "row",
@@ -372,8 +394,6 @@ const styles = StyleSheet.create({
         borderColor: "#B3B3B3",
         borderRadius: 5,
         backgroundColor: "#FFFFFF",
-        marginRight: 30,
-        marginLeft: 30,
     },
     radioButton: {
         height: 24,
@@ -393,7 +413,6 @@ const styles = StyleSheet.create({
     },
     radioOptionText: {
         fontSize: 16,
-        color: "#2D2D2D",
     },
     buttonContainer: {
         flexDirection: "row",
@@ -422,9 +441,13 @@ const styles = StyleSheet.create({
     },
     timePickerContainer: {
         flexDirection: "row",
-        justifyContent: "center",
         alignItems: "center",
+        justifyContent: "center",
         marginVertical: 20,
+    },
+    pickerStyle: {
+        flex: 1,
+        height: 200,
     },
     timeSeparator: {
         fontSize: 24,
@@ -432,25 +455,31 @@ const styles = StyleSheet.create({
         color: "#2D2D2D",
         marginHorizontal: 10,
     },
-    refillContainer: { padding: 10 },
-
+    refillContainer: {
+        padding: 20,
+        backgroundColor: "#FFFFFF",
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "#E0E0E0",
+        marginVertical: 10,
+    },
     switchRow: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 10,
+        marginBottom: 15,
     },
     switchLabel: {
         fontSize: 16,
-        color: "#333",
-        fontWeight: "bold",
+        color: "#333333",
+        fontWeight: "600",
     },
     inputRow: {
-        marginVertical: 10,
+        marginBottom: 15,
     },
     inputLabel: {
         fontSize: 14,
-        color: "#555",
+        color: "#555555",
         marginBottom: 5,
     },
 });

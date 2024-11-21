@@ -1,0 +1,302 @@
+[
+  {
+    "id": 1,
+    "name": "Paracetamol",
+    "brandNames": ["Mexalen"],
+    "description": "Used to treat pain and fever."
+  },
+  {
+    "id": 2,
+    "name": "Ibuprofen",
+    "brandNames": ["Brufen"],
+    "description": "Nonsteroidal anti-inflammatory drug (NSAID) used to reduce fever and treat pain or inflammation."
+  },
+  {
+    "id": 3,
+    "name": "Acetylsalicylic Acid",
+    "brandNames": ["Aspirin"],
+    "description": "NSAID used to reduce pain, fever, or inflammation."
+  },
+  {
+    "id": 4,
+    "name": "Metformin",
+    "brandNames": ["Glucophage"],
+    "description": "Oral diabetes medicine that helps control blood sugar levels."
+  },
+  {
+    "id": 5,
+    "name": "Atorvastatin",
+    "brandNames": ["Sortis"],
+    "description": "Statin medication used to prevent cardiovascular disease and treat abnormal lipid levels."
+  },
+  {
+    "id": 6,
+    "name": "Ramipril",
+    "brandNames": ["Delix"],
+    "description": "ACE inhibitor used to treat high blood pressure and congestive heart failure."
+  },
+  {
+    "id": 7,
+    "name": "Amlodipine",
+    "brandNames": ["Norvasc"],
+    "description": "Calcium channel blocker used to treat high blood pressure and coronary artery disease."
+  },
+  {
+    "id": 8,
+    "name": "Omeprazole",
+    "brandNames": ["Antra"],
+    "description": "Proton pump inhibitor used to treat gastroesophageal reflux disease and peptic ulcers."
+  },
+  {
+    "id": 9,
+    "name": "Pantoprazole",
+    "brandNames": ["Pantozol"],
+    "description": "Proton pump inhibitor used for short-term treatment of erosion and ulceration of the esophagus."
+  },
+  {
+    "id": 10,
+    "name": "Simvastatin",
+    "brandNames": ["Zocor"],
+    "description": "Statin medication used to control hypercholesterolemia and prevent cardiovascular disease."
+  },
+  {
+    "id": 11,
+    "name": "Lisinopril",
+    "brandNames": ["LisiHEXAL"],
+    "description": "ACE inhibitor used to treat high blood pressure and heart failure."
+  },
+  {
+    "id": 12,
+    "name": "Losartan",
+    "brandNames": ["Lorzaar"],
+    "description": "Angiotensin II receptor antagonist used to treat high blood pressure."
+  },
+  {
+    "id": 13,
+    "name": "Bisoprolol",
+    "brandNames": ["Concor"],
+    "description": "Beta-blocker used to treat high blood pressure and heart-related chest pain."
+  },
+  {
+    "id": 14,
+    "name": "Metoprolol",
+    "brandNames": ["Beloc"],
+    "description": "Beta-blocker used to treat high blood pressure, chest pain, and heart failure."
+  },
+  {
+    "id": 15,
+    "name": "Clopidogrel",
+    "brandNames": ["Plavix"],
+    "description": "Antiplatelet medication used to reduce the risk of heart disease and stroke."
+  },
+  {
+    "id": 16,
+    "name": "Salbutamol",
+    "brandNames": ["Sultanol"],
+    "description": "Short-acting β₂-adrenergic receptor agonist used to relieve bronchospasm in conditions such as asthma."
+  },
+  {
+    "id": 17,
+    "name": "Fluticasone",
+    "brandNames": ["Flixotide"],
+    "description": "Steroid used to prevent asthma attacks."
+  },
+  {
+    "id": 18,
+    "name": "Amoxicillin",
+    "brandNames": ["AmoxiHEXAL"],
+    "description": "Antibiotic used to treat a number of bacterial infections."
+  },
+  {
+    "id": 19,
+    "name": "Ciprofloxacin",
+    "brandNames": ["Ciproxin"],
+    "description": "Antibiotic used to treat a variety of bacterial infections."
+  },
+  {
+    "id": 20,
+    "name": "Azithromycin",
+    "brandNames": ["Zithromax"],
+    "description": "Antibiotic used to treat various types of infections."
+  },
+  {
+    "id": 21,
+    "name": "Levothyroxine",
+    "brandNames": ["Euthyrox"],
+    "description": "Hormone replacement used to treat hypothyroidism."
+  },
+  {
+    "id": 22,
+    "name": "Insulin Glargine",
+    "brandNames": ["Lantus"],
+    "description": "Long-acting insulin used to treat type 1 and type 2 diabetes."
+  },
+  {
+    "id": 23,
+    "name": "Insulin Aspart",
+    "brandNames": ["NovoRapid"],
+    "description": "Rapid-acting insulin used to improve blood sugar control in diabetes."
+  },
+  {
+    "id": 24,
+    "name": "Warfarin",
+    "brandNames": ["Marcoumar"],
+    "description": "Anticoagulant used to prevent blood clots."
+  },
+  {
+    "id": 25,
+    "name": "Rivaroxaban",
+    "brandNames": ["Xarelto"],
+    "description": "Anticoagulant used to treat and prevent blood clots."
+  },
+  {
+    "id": 26,
+    "name": "Apixaban",
+    "brandNames": ["Eliquis"],
+    "description": "Anticoagulant used to reduce the risk of stroke and blood clots."
+  },
+  {
+    "id": 27,
+    "name": "Dabigatran",
+    "brandNames": ["Pradaxa"],
+    "description": "Anticoagulant used to prevent strokes and blood clots."
+  },
+  {
+    "id": 28,
+    "name": "Hydrochlorothiazide",
+    "brandNames": ["Esidrix"],
+    "description": "Diuretic used to treat high blood pressure and swelling due to fluid build-up."
+  },
+  {
+    "id": 29,
+    "name": "Furosemide",
+    "brandNames": ["Lasix"],
+    "description": "Diuretic used to treat fluid build-up due to heart failure, liver scarring, or kidney disease."
+  },
+  {
+    "id": 30,
+    "name": "Spironolactone",
+    "brandNames": ["Aldactone"],
+    "description": "Diuretic used to treat fluid retention in conditions such as heart failure."
+  },
+  {
+    "id": 31,
+    "name": "Allopurinol",
+    "brandNames": ["Zyloric"],
+    "description": "Used to reduce uric acid levels in gout and certain types of kidney stones."
+  },
+  {
+    "id": 32,
+    "name": "Colchicine",
+    "brandNames": ["Colchicum-Dispert"],
+    "description": "Used to prevent or treat gout attacks."
+  },
+  {
+    "id": 33,
+    "name": "Methotrexate",
+    "brandNames": ["Lantarel"],
+    "description": "Used to treat cancer, autoimmune diseases, and ectopic pregnancies."
+  },
+  {
+    "id": 34,
+    "name": "Prednisolone",
+    "brandNames": ["Decortin"],
+    "description": "Steroid used to treat inflammation and autoimmune conditions."
+  },
+  {
+    "id": 35,
+    "name": "Alendronic Acid",
+    "brandNames": ["Fosamax"],
+    "description": "Bisphosphonate used to treat osteoporosis and other bone diseases."
+  },
+  {
+    "id": 36,
+    "name": "Risedronic Acid",
+    "brandNames": ["Actonel"],
+    "description": "Used to strengthen bones and treat osteoporosis."
+  },
+  {
+    "id": 37,
+    "name": "Esomeprazole",
+    "brandNames": ["Nexium"],
+    "description": "Proton pump inhibitor used to treat acid reflux."
+  },
+  {
+    "id": 38,
+    "name": "Lansoprazole",
+    "brandNames": ["Agopton"],
+    "description": "Proton pump inhibitor used to treat stomach ulcers."
+  },
+  {
+    "id": 39,
+    "name": "Duloxetine",
+    "brandNames": ["Cymbalta"],
+    "description": "Used to treat depression and anxiety."
+  },
+  {
+    "id": 40,
+    "name": "Sertraline",
+    "brandNames": ["Zoloft"],
+    "description": "Used to treat depression, OCD, and anxiety disorders."
+  },
+  {
+    "id": 41,
+    "name": "Citalopram",
+    "brandNames": ["Cipramil"],
+    "description": "Used to treat depression and panic disorder."
+  },
+  {
+    "id": 42,
+    "name": "Escitalopram",
+    "brandNames": ["Cipralex"],
+    "description": "Used to treat depression and generalized anxiety disorder."
+  },
+  {
+    "id": 43,
+    "name": "Venlafaxine",
+    "brandNames": ["Efexor"],
+    "description": "Used to treat depression and anxiety disorders."
+  },
+  {
+    "id": 44,
+    "name": "Olanzapine",
+    "brandNames": ["Zyprexa"],
+    "description": "Antipsychotic used to treat schizophrenia and bipolar disorder."
+  },
+  {
+    "id": 45,
+    "name": "Risperidone",
+    "brandNames": ["Risperdal"],
+    "description": "Antipsychotic used to treat schizophrenia and bipolar disorder."
+  },
+  {
+    "id": 46,
+    "name": "Quetiapine",
+    "brandNames": ["Seroquel"],
+    "description": "Antipsychotic used to treat schizophrenia, bipolar disorder, and depression."
+  },
+  {
+    "id": 47,
+    "name": "Lorazepam",
+    "brandNames": ["Tavor"],
+    "description": "Benzodiazepine used to treat anxiety and sleep disorders."
+  },
+  {
+    "id": 48,
+    "name": "Diazepam",
+    "brandNames": ["Valium"],
+    "description": "Benzodiazepine used to treat anxiety, muscle spasms, and seizures."
+  },
+  {
+    "id": 49,
+    "name": "Zolpidem",
+    "brandNames": ["Stilnox"],
+    "description": "Used to treat insomnia."
+  },
+  {
+    "id": 50,
+    "name": "Levocetirizine",
+    "brandNames": ["Xyzal"],
+    "description": "Antihistamine used to treat allergies."
+  }
+]

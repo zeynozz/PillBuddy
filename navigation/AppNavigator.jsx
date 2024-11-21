@@ -14,31 +14,45 @@ import Service from "../screens/Service";
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-const MedicationsStackNavigator = () => (
-    <Stack.Navigator
-        screenOptions={{
-            headerShown: false,
-        }}
-    >
+const HomeStackNavigator = () => (
+    <Stack.Navigator>
         <Stack.Screen
-            name="MedicationsList"
-            component={Medication}
-            options={{ title: "Medications" }}
+            name="Home"
+            component={Homepage}
+            options={{ headerShown: false }}
         />
         <Stack.Screen
             name="AddMedication"
             component={AddMedication}
             options={{
                 title: "Add Medication",
-                headerStyle: { backgroundColor: "#fff" },
-                headerTintColor: "#000000",
+                headerStyle: { backgroundColor: "#007BFF" },
+                headerTintColor: "#fff",
                 headerTitleStyle: { fontWeight: "bold" },
             }}
         />
     </Stack.Navigator>
 );
 
-
+const MedicationsStackNavigator = () => (
+    <Stack.Navigator>
+        <Stack.Screen
+            name="MedicationsList"
+            component={Medication}
+            options={{ headerShown: false }}
+        />
+        <Stack.Screen
+            name="AddMedication"
+            component={AddMedication}
+            options={{
+                title: "Add Medication",
+                headerStyle: { backgroundColor: "#007BFF" },
+                headerTintColor: "#fff",
+                headerTitleStyle: { fontWeight: "bold" },
+            }}
+        />
+    </Stack.Navigator>
+);
 
 const MainTabNavigator = () => (
     <Tab.Navigator
@@ -57,32 +71,30 @@ const MainTabNavigator = () => (
                         style={{
                             width: 24,
                             height: 24,
+                            tintColor: focused ? "#007BFF" : "gray",
                         }}
                     />
                 );
             },
-            tabBarActiveTintColor: "#198679",
+            tabBarActiveTintColor: "#007BFF",
             tabBarInactiveTintColor: "gray",
         })}
     >
         <Tab.Screen
             name="Home"
-            component={Homepage}
+            component={HomeStackNavigator}
             options={{ title: "Home" }}
         />
-
         <Tab.Screen
             name="Medications"
             component={MedicationsStackNavigator}
             options={{ title: "Medications" }}
         />
-
         <Tab.Screen
             name="Discover"
             component={Discover}
             options={{ title: "Discover" }}
         />
-
         <Tab.Screen
             name="Service"
             component={Service}
@@ -91,6 +103,7 @@ const MainTabNavigator = () => (
     </Tab.Navigator>
 );
 
+// Root Stack Navigator
 const AppNavigator = () => (
     <NavigationContainer>
         <Stack.Navigator initialRouteName="Login">

@@ -1,13 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { View, Text, Image, TouchableOpacity, FlatList } from "react-native";
 import moment from "moment";
 import { globalStyles } from "../styles/styles";
 import homepageStyles from "../styles/homepage";
+import { MedicationContext } from "../context/MedicationContext";
 
 const Homepage = ({ navigation }) => {
     const [days, setDays] = useState([]);
     const [currentDayIndex, setCurrentDayIndex] = useState(1);
     const flatListRef = useRef(null);
+    const { selectedMedications, setSelectedMedications } = useContext(MedicationContext);
+    const [showWelcome, setShowWelcome] = useState(true);
 
     useEffect(() => {
         const generateDays = () => {
@@ -28,6 +31,17 @@ const Homepage = ({ navigation }) => {
 
         generateDays();
     }, []);
+
+    const handleAddMedication = () => {
+        setShowWelcome(false); // Versteckt den Willkommens-Text und Button
+        navigation.navigate("AddMedication"); // Navigiert zur AddMedication-Seite
+    };
+
+    const renderMedication = ({ item }) => (
+        <View style={globalStyles.medicationItem}>
+            <Text style={globalStyles.medicationName}>{item.name}</Text>
+        </View>
+    );
 
     const renderDay = ({ item }) => (
         <View style={homepageStyles.dayWrapper}>
@@ -58,6 +72,7 @@ const Homepage = ({ navigation }) => {
 
     return (
         <View style={globalStyles.container}>
+            {/* Kalenderanzeige */}
             <View style={homepageStyles.calendarWrapper}>
                 <TouchableOpacity
                     style={homepageStyles.arrowButton}
@@ -108,24 +123,42 @@ const Homepage = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
 
+            {/* Hauptinhalt */}
             <View style={globalStyles.centerContent}>
-                <Image
-                    source={require("../assets/logo.png")}
-                    style={globalStyles.mascot}
-                />
-                <Text style={globalStyles.headerText}>Welcome to PillBuddy!</Text>
-                <Text style={globalStyles.normalText}>
-                    You are all signed up! Let’s get started!
-                </Text>
-                <TouchableOpacity
-                    style={globalStyles.addMedicationButton}
-                    onPress={() => navigation.navigate("Medications", { screen: "AddMedication" })} // Navigiere explizit zum Medications-Tab
-                >
-                    <Text style={globalStyles.addMedicationButtonText}>
-                        Add Medication
-                    </Text>
-                </TouchableOpacity>
+                {showWelcome && !selectedMedications.length && (
+                    <>
+                        <Image
+                            source={require("../assets/logo.png")}
+                            style={globalStyles.mascot}
+                        />
+                        <Text style={globalStyles.headerText}>Welcome to PillBuddy!</Text>
+                        <Text style={globalStyles.normalText}>
+                            You are all signed up! Let’s get started!
+                        </Text>
+                        <TouchableOpacity
+                            style={globalStyles.addMedicationButton}
+                            onPress={handleAddMedication}
+                        >
+                            <Text style={globalStyles.addMedicationButtonText}>
+                                Add Medication
+                            </Text>
+                        </TouchableOpacity>
+                    </>
+                )}
 
+                {selectedMedications.length > 0 && (
+                    <>
+                        <Text style={globalStyles.medicationHeaderText}>
+                            Your Medications:
+                        </Text>
+                        <FlatList
+                            data={selectedMedications}
+                            renderItem={renderMedication}
+                            keyExtractor={(item) => item.id.toString()}
+                            contentContainerStyle={globalStyles.medicationList}
+                        />
+                    </>
+                )}
             </View>
         </View>
     );
