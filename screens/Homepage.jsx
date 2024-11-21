@@ -1,16 +1,31 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
-import { View, Text, Image, TouchableOpacity, FlatList } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import {
+    View,
+    Text,
+    Image,
+    TouchableOpacity,
+    FlatList,
+    ActivityIndicator,
+    Modal,
+    StyleSheet,
+} from "react-native";
 import moment from "moment";
 import { globalStyles } from "../styles/styles";
 import homepageStyles from "../styles/homepage";
-import { MedicationContext } from "../context/MedicationContext";
+import { fetchMedications } from "../database/storage";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Homepage = ({ navigation }) => {
     const [days, setDays] = useState([]);
     const [currentDayIndex, setCurrentDayIndex] = useState(1);
     const flatListRef = useRef(null);
-    const { selectedMedications, setSelectedMedications } = useContext(MedicationContext);
+    const [medications, setMedications] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [showWelcome, setShowWelcome] = useState(true);
+
+    // State for modal
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedMedication, setSelectedMedication] = useState(null);
 
     useEffect(() => {
         const generateDays = () => {
@@ -32,16 +47,48 @@ const Homepage = ({ navigation }) => {
         generateDays();
     }, []);
 
-    const handleAddMedication = () => {
-        setShowWelcome(false); // Versteckt den Willkommens-Text und Button
-        navigation.navigate("AddMedication"); // Navigiert zur AddMedication-Seite
+    const loadMedications = async () => {
+        try {
+            setLoading(true);
+            const fetchedMedications = await fetchMedications();
+            setMedications(fetchedMedications);
+        } catch (error) {
+            console.error("Error fetching medications:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const renderMedication = ({ item }) => (
-        <View style={globalStyles.medicationItem}>
-            <Text style={globalStyles.medicationName}>{item.name}</Text>
-        </View>
+    useFocusEffect(
+        React.useCallback(() => {
+            loadMedications();
+        }, [])
     );
+
+    const groupMedicationsByTime = () => {
+        const grouped = {};
+        medications.forEach((med) => {
+            const time = med.dosageTime || `${med.dosageTimeHour.padStart(2, "0")}:${med.dosageTimeMinute.padStart(2, "0")}`;
+            if (!grouped[time]) {
+                grouped[time] = [];
+            }
+            grouped[time].push(med);
+        });
+
+        return Object.keys(grouped)
+            .sort((a, b) => (a > b ? 1 : -1))
+            .map((time) => ({ time, medications: grouped[time] }));
+    };
+
+    const handleAddMedication = () => {
+        setShowWelcome(false);
+        navigation.navigate("AddMedication");
+    };
+
+    const handleAlertClick = (medication) => {
+        setSelectedMedication(medication);
+        setIsModalVisible(true);
+    };
 
     const renderDay = ({ item }) => (
         <View style={homepageStyles.dayWrapper}>
@@ -70,9 +117,77 @@ const Homepage = ({ navigation }) => {
         </View>
     );
 
+    const renderMedication = ({ item }) => (
+        <View style={homepageStyles.medicationItem} key={item.id}>
+            <View style={homepageStyles.leftSection}>
+                <Image
+                    source={require("../assets/fancyPill.png")}
+                    style={homepageStyles.pillIcon}
+                />
+                <View>
+                    <Text style={homepageStyles.medicationName}>{item.medicationName}</Text>
+                    <Text style={homepageStyles.medicationDetails}>
+                        {item.dosageFrequency || "N/A"} {item.medicationForm || ""} @ {item.dosageTime}
+                    </Text>
+                </View>
+            </View>
+            <TouchableOpacity
+                onPress={() => handleAlertClick(item)}
+            >
+                <Image
+                    source={require("../assets/alert.png")}
+                    style={homepageStyles.alertIcon}
+                />
+            </TouchableOpacity>
+        </View>
+    );
+
+    const renderGroupedMedications = ({ item }) => (
+        <View style={homepageStyles.groupedMedications} key={item.time}>
+            <Text style={homepageStyles.timeLabel}>{item.time}</Text>
+            {item.medications.map((med) => renderMedication({ item: med }))}
+        </View>
+    );
+
     return (
         <View style={globalStyles.container}>
-            {/* Kalenderanzeige */}
+            {/* Modal for Medication */}
+            <Modal
+                visible={isModalVisible}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() => setIsModalVisible(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <TouchableOpacity
+                            style={styles.closeButton}
+                            onPress={() => setIsModalVisible(false)}
+                        >
+                            <Text style={styles.closeText}>X</Text>
+                        </TouchableOpacity>
+                        {selectedMedication && (
+                            <>
+                                <Image
+                                    source={require("../assets/fancyPill.png")}
+                                    style={styles.modalPillIcon}
+                                />
+                                <Text style={styles.modalMedicationName}>
+                                    {selectedMedication.medicationName}
+                                </Text>
+                                <Text style={styles.modalDetails}>
+                                    Planned for {selectedMedication.dosageTime}, today
+                                </Text>
+                                <Text style={styles.modalDetails}>
+                                    {selectedMedication.dosageFrequency}
+                                </Text>
+                            </>
+                        )}
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Calendar */}
             <View style={homepageStyles.calendarWrapper}>
                 <TouchableOpacity
                     style={homepageStyles.arrowButton}
@@ -96,17 +211,6 @@ const Homepage = ({ navigation }) => {
                     contentContainerStyle={homepageStyles.calendarContainer}
                     showsHorizontalScrollIndicator={false}
                     initialScrollIndex={currentDayIndex}
-                    getItemLayout={(data, index) => ({
-                        length: 120,
-                        offset: 120 * index,
-                        index,
-                    })}
-                    onScrollToIndexFailed={(info) => {
-                        flatListRef.current.scrollToOffset({
-                            offset: info.averageItemLength * info.index,
-                            animated: true,
-                        });
-                    }}
                 />
 
                 <TouchableOpacity
@@ -123,9 +227,11 @@ const Homepage = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
 
-            {/* Hauptinhalt */}
+            {/* Content */}
             <View style={globalStyles.centerContent}>
-                {showWelcome && !selectedMedications.length && (
+                {loading ? (
+                    <ActivityIndicator size="large" color="#198679" />
+                ) : showWelcome && medications.length === 0 ? (
                     <>
                         <Image
                             source={require("../assets/logo.png")}
@@ -144,20 +250,13 @@ const Homepage = ({ navigation }) => {
                             </Text>
                         </TouchableOpacity>
                     </>
-                )}
-
-                {selectedMedications.length > 0 && (
-                    <>
-                        <Text style={globalStyles.medicationHeaderText}>
-                            Your Medications:
-                        </Text>
-                        <FlatList
-                            data={selectedMedications}
-                            renderItem={renderMedication}
-                            keyExtractor={(item) => item.id.toString()}
-                            contentContainerStyle={globalStyles.medicationList}
-                        />
-                    </>
+                ) : (
+                    <FlatList
+                        data={groupMedicationsByTime()}
+                        renderItem={renderGroupedMedications}
+                        keyExtractor={(item) => item.time}
+                        contentContainerStyle={homepageStyles.medicationListContainer}
+                    />
                 )}
             </View>
         </View>
@@ -165,3 +264,41 @@ const Homepage = ({ navigation }) => {
 };
 
 export default Homepage;
+
+const styles = StyleSheet.create({
+    modalContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalContent: {
+        width: "80%",
+        backgroundColor: "white",
+        borderRadius: 10,
+        padding: 20,
+        alignItems: "center",
+    },
+    closeButton: {
+        alignSelf: "flex-end",
+        marginBottom: 10,
+    },
+    closeText: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "#000",
+    },
+    modalPillIcon: {
+        width: 50,
+        height: 50,
+    },
+    modalMedicationName: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginVertical: 10,
+    },
+    modalDetails: {
+        fontSize: 16,
+        marginVertical: 5,
+    },
+});

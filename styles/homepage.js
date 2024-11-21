@@ -68,6 +68,51 @@ const homepageStyles = StyleSheet.create({
         color: colors.textPrimary,
         marginBottom: 8,
     },
+    groupedMedications: {
+        marginVertical: 10,
+        paddingHorizontal: 10,
+    },
+    timeLabel: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: colors.textPrimary,
+        marginBottom: 10,
+    },
+    medicationItem: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        backgroundColor: "#fff",
+        padding: 15,
+        borderRadius: 10,
+        marginBottom: 10,
+        borderWidth: 1,
+        borderColor: "#e0e0e0",
+        elevation: 1,
+        width: 350,
+    },
+    leftSection: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    pillIcon: {
+        width: 40,
+        height: 40,
+        marginRight: 30,
+    },
+    medicationName: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: colors.textPrimary,
+    },
+    medicationDetails: {
+        fontSize: 14,
+        color: colors.textSecondary,
+    },
+    alertIcon: {
+        width: 40,
+        height: 40,
+    },
 });
 
 export default homepageStyles;
