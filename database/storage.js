@@ -1,5 +1,5 @@
 import { db } from './firebaseConfig';
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs, deleteDoc, doc } from "firebase/firestore";
 
 export const saveMedication = async (medication) => {
     try {
@@ -24,6 +24,17 @@ export const fetchMedications = async () => {
         return medications;
     } catch (error) {
         console.error("Fehler beim Abrufen der Medikamente:", error);
+        throw error;
+    }
+};
+
+export const deleteMedication = async (id) => {
+    try {
+        const medicationDoc = doc(db, "medications", id);
+        await deleteDoc(medicationDoc);
+        console.log("Medikament erfolgreich gelöscht:", id);
+    } catch (error) {
+        console.error("Fehler beim Löschen des Medikaments:", error);
         throw error;
     }
 };
