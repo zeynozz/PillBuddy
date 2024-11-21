@@ -46,10 +46,6 @@ const LoginPage = ({ navigation }) => {
             style={styles.image}
         />
 
-        <TouchableOpacity style={[styles.button, styles.faceIDButton]} onPress={handleFaceIDLogin}>
-          <Text style={styles.buttonText}>Log in with Face ID</Text>
-        </TouchableOpacity>
-
         <TouchableOpacity style={styles.button} onPress={handleGuestLogin}>
           <Text style={styles.buttonText}>Continue as Guest</Text>
         </TouchableOpacity>
