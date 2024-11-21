@@ -119,12 +119,13 @@ const Homepage = ({ navigation }) => {
                 </Text>
                 <TouchableOpacity
                     style={globalStyles.addMedicationButton}
-                    onPress={() => navigation.navigate("Medications", { screen: "AddMedication" })}
+                    onPress={() => navigation.navigate("Medications", { screen: "AddMedication" })} // Navigiere explizit zum Medications-Tab
                 >
                     <Text style={globalStyles.addMedicationButtonText}>
                         Add Medication
                     </Text>
                 </TouchableOpacity>
+
             </View>
         </View>
     );

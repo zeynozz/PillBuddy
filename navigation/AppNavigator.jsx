@@ -8,9 +8,37 @@ import LoginPage from "../screens/LoginPage";
 import Homepage from "../screens/Homepage";
 import Medication from "../screens/Medication";
 import AddMedication from "../screens/AddMedication";
+import Discover from "../screens/Discover";
+import Service from "../screens/Service";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
+const MedicationsStackNavigator = () => (
+    <Stack.Navigator
+        screenOptions={{
+            headerShown: false,
+        }}
+    >
+        <Stack.Screen
+            name="MedicationsList"
+            component={Medication}
+            options={{ title: "Medications" }}
+        />
+        <Stack.Screen
+            name="AddMedication"
+            component={AddMedication}
+            options={{
+                title: "Add Medication",
+                headerStyle: { backgroundColor: "#fff" },
+                headerTintColor: "#000000",
+                headerTitleStyle: { fontWeight: "bold" },
+            }}
+        />
+    </Stack.Navigator>
+);
+
+
 
 const MainTabNavigator = () => (
     <Tab.Navigator
@@ -39,65 +67,28 @@ const MainTabNavigator = () => (
     >
         <Tab.Screen
             name="Home"
-            component={HomeStackNavigator}
+            component={Homepage}
             options={{ title: "Home" }}
         />
+
         <Tab.Screen
             name="Medications"
             component={MedicationsStackNavigator}
             options={{ title: "Medications" }}
         />
+
         <Tab.Screen
             name="Discover"
-            component={Medication}
+            component={Discover}
             options={{ title: "Discover" }}
         />
+
         <Tab.Screen
             name="Service"
-            component={Medication}
+            component={Service}
             options={{ title: "Service" }}
         />
     </Tab.Navigator>
-);
-
-const HomeStackNavigator = () => (
-    <Stack.Navigator>
-        <Stack.Screen
-            name="Home"
-            component={Homepage}
-            options={{ title: "Home" }}
-        />
-        <Stack.Screen
-            name="AddMedication"
-            component={AddMedication}
-            options={{
-                title: "Add Medication",
-                headerStyle: { backgroundColor: "#fff" },
-                headerTintColor: "#000000",
-                headerTitleStyle: { fontWeight: "bold" },
-            }}
-        />
-    </Stack.Navigator>
-);
-
-const MedicationsStackNavigator = () => (
-    <Stack.Navigator>
-        <Stack.Screen
-            name="MedicationsList"
-            component={Medication}
-            options={{ title: "Medications" }}
-        />
-        <Stack.Screen
-            name="AddMedication"
-            component={AddMedication}
-            options={{
-                title: "Add Medication",
-                headerStyle: { backgroundColor: "#fff" },
-                headerTintColor: "#000000",
-                headerTitleStyle: { fontWeight: "bold" },
-            }}
-        />
-    </Stack.Navigator>
 );
 
 const AppNavigator = () => (
@@ -108,7 +99,6 @@ const AppNavigator = () => (
                 component={LoginPage}
                 options={{ headerShown: false }}
             />
-
             <Stack.Screen
                 name="Main"
                 component={MainTabNavigator}
