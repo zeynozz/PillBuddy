@@ -33,41 +33,37 @@ const homepageStyles = StyleSheet.create({
     dayContainer: {
         width: 60,
         height: 60,
-        borderRadius: 40,
-        backgroundColor: colors.secondary,
-        alignItems: "center",
+        borderRadius: 30,
         justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "lightgray",
     },
     currentDayContainer: {
         backgroundColor: colors.primary,
         borderWidth: 3,
-        borderColor: colors.textPrimary,
-        width: 100,
-        height: 100,
-        borderRadius: 50,
+        borderColor: "black",
+        width: 80,
+        height: 80,
     },
     dayText: {
         fontSize: 16,
-        fontWeight: "bold",
-        color: colors.textPrimary,
-        marginBottom: 4,
+        color: "#333",
     },
     currentDayText: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: "bold",
-        color: colors.textPrimary,
-        marginBottom: 4,
+        color: "black",
     },
     dateText: {
         fontSize: 14,
-        color: colors.textSecondary,
-        marginBottom: 8,
+        color: "#666",
     },
     currentDateText: {
-        fontSize: 16,
-        color: colors.textPrimary,
-        marginBottom: 8,
+        fontSize: 14,
+        fontWeight: "bold",
+        color: "black",
     },
+
     groupedMedications: {
         marginVertical: 10,
         paddingHorizontal: 10,
@@ -77,6 +73,7 @@ const homepageStyles = StyleSheet.create({
         fontWeight: "bold",
         color: colors.textPrimary,
         marginBottom: 10,
+        marginLeft: 30,
     },
     medicationItem: {
         flexDirection: "row",
@@ -85,11 +82,12 @@ const homepageStyles = StyleSheet.create({
         backgroundColor: "#fff",
         padding: 15,
         borderRadius: 10,
-        marginBottom: 10,
+        marginBottom: 40,
         borderWidth: 1,
         borderColor: "#e0e0e0",
         elevation: 1,
-        width: 350,
+        alignSelf: "center",
+        width: "90%",
     },
     leftSection: {
         flexDirection: "row",
@@ -105,13 +103,80 @@ const homepageStyles = StyleSheet.create({
         fontWeight: "bold",
         color: colors.textPrimary,
     },
-    medicationDetails: {
-        fontSize: 14,
-        color: colors.textSecondary,
-    },
     alertIcon: {
         width: 40,
         height: 40,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalContent: {
+        width: "90%",
+        padding: 20,
+        backgroundColor: "#fff",
+        borderRadius: 10,
+        alignItems: "center",
+    },
+    closeButton: {
+        position: "absolute",
+        top: 10,
+        right: 10,
+    },
+    closeButtonText: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "#000",
+    },
+    modalPillIcon: {
+        width: 50,
+        height: 50,
+        marginBottom: 10,
+    },
+    modalHeaderText: {
+        fontSize: 20,
+        fontWeight: "bold",
+        marginBottom: 10,
+    },
+    modalDetailsText: {
+        fontSize: 16,
+        color: "#666",
+        textAlign: "center",
+        marginBottom: 10,
+    },
+    actionButtonsContainer: {
+        flexDirection: "row",
+        justifyContent: "space-around",
+        width: "100%",
+        marginTop: 20,
+    },
+    actionButton: {
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    skipButton: {
+        padding: 10,
+        borderRadius: 8,
+    },
+    confirmButton: {
+        padding: 10,
+        borderRadius: 8,
+    },
+    planButton: {
+        padding: 10,
+        borderRadius: 8,
+        marginHorizontal: 5,
+    },
+    modalIcon: {
+        width: 30,
+        height: 30,
+    },
+    medicationDetails: {
+        fontSize: 18,
+        color: "FFFFFF",
+        marginTop: 10,
     },
 });
 
