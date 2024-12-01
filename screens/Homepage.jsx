@@ -1,4 +1,5 @@
 /**
+ * Priority: 1
  * Homepage Component
  * Displays the user's medication schedule, allows them to confirm, skip, or edit medications.
  */

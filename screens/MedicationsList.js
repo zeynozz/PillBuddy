@@ -1,3 +1,11 @@
+/**
+ * MedicationsList Component
+ * A simple component for displaying a list of medications. It provides:
+ * - A basic list view of medications fetched from local storage.
+ * - The ability to delete medications via a delete button.
+ *
+ */
+
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import { getMedications, deleteMedication } from "../database/storage";

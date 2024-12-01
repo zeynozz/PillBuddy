@@ -1,3 +1,11 @@
+/**
+ * Priority: 2
+ * Discover Component
+ * This module is currently assigned Priority 2, meaning it will be developed and enhanced at a later stage.
+ * The focus is currently on higher-priority features. Once the main modules are completed, this component
+ * will be revisited and improved.
+ */
+
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 

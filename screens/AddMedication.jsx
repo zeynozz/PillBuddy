@@ -1,3 +1,10 @@
+/**
+ * Priority: 1
+ * AddMedication Component
+ * This component provides a multi-step form for users to add medications to their profile.
+ * Users can input details such as medication name, form, dosage, and refill reminders.
+ */
+
 import React, { useState } from "react";
 import {
     View,

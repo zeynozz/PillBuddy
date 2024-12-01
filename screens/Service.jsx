@@ -1,3 +1,14 @@
+/**
+ * Service Component
+ * Priority: 2
+ * This component provides users with access to emergency help or support options.
+ * Planned Features:
+ * - Link to Shop Apotheke for convenient access to pharmacy services.
+ * - Emergency contact integration.
+ *
+ * This is a placeholder component and will be expanded as part of a later development phase.
+ */
+
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 

@@ -1,3 +1,13 @@
+/**
+ * Medication Component
+ * A feature-rich component for managing medications. It allows users to:
+ * - View their medications in a visually appealing card format.
+ * - Swipe to delete medications with a confirmation dialog.
+ * - Edit medications by navigating to the "AddMedication" screen.
+ * - Add new medications using a floating action button.
+ *
+ */
+
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Alert } from "react-native";
 import { fetchMedications, deleteMedication } from "../database/storage";

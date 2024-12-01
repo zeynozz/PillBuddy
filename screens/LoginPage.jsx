@@ -1,3 +1,14 @@
+/**
+ * LoginPage Component
+ * This component serves as the entry point for the PillBuddy app. It provides users with two login options:
+ * 1. Guest Login: Allows users to access the app without authentication.
+ *
+ * Features:
+ * - Lottie animation for a visually appealing background.
+ * - Face ID authentication with fallback to a PIN prompt if necessary - we will not implement Face ID!
+ * - Navigation to the main app page after successful login.
+ */
+
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
 import LottieView from "lottie-react-native";
