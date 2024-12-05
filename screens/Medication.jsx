@@ -5,7 +5,7 @@
  * - Swipe to delete medications with a confirmation dialog.
  * - Edit medications by navigating to the "AddMedication" screen.
  * - Add new medications using a floating action button.
- *
+ * - Includes a visible delete button with a bin icon for elderly users.
  */
 
 import React, { useEffect, useState } from "react";
@@ -82,28 +82,42 @@ const Medication = ({ navigation }) => {
               </Text>
             </View>
           </View>
-          <TouchableOpacity
-              onPress={() => navigation.navigate("AddMedication", { medicationId: item.id })}
-          >
-            <Image
-                source={require("../assets/pen.png")}
-                style={styles.editIcon}
-            />
-          </TouchableOpacity>
+          <View style={styles.actions}>
+            {/* Edit Button */}
+            <TouchableOpacity
+                onPress={() => navigation.navigate("AddMedication", { medicationId: item.id })}
+                style={styles.actionButton}
+            >
+              <Image
+                  source={require("../assets/pen.png")}
+                  style={styles.editIcon}
+              />
+            </TouchableOpacity>
+
+            {/* Delete Button with Bin Icon */}
+            <TouchableOpacity
+                onPress={() => confirmDelete(item.id)}
+                style={styles.actionButton}
+            >
+              <Image
+                  source={require("../assets/delete.png")}
+                  style={styles.deleteIcon}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       </Swipeable>
   );
 
   return (
       <View style={styles.container}>
-        <Text style={styles.header}>Your Medications</Text>
         {medications.length === 0 ? (
             <Text style={styles.noDataText}>No medications found. Please add one!</Text>
         ) : (
             <FlatList
                 data={medications}
                 renderItem={renderMedication}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item.id.toString()}
                 contentContainerStyle={styles.list}
             />
         )}
@@ -170,10 +184,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#777",
   },
+  actions: {
+    flexDirection: "row",
+  },
+  actionButton: {
+    marginLeft: 10,
+  },
   editIcon: {
     width: 24,
     height: 24,
     tintColor: "#198679",
+  },
+  deleteIcon: {
+    width: 24,
+    height: 24,
+    tintColor: "#ff4d4f",
   },
   addButton: {
     position: "absolute",
@@ -201,7 +226,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#ff4d4f",
     justifyContent: "center",
     alignItems: "flex-end",
-    borderRadius: 10,
     marginBottom: 10,
     paddingRight: 20,
   },

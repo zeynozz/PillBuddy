@@ -21,7 +21,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { saveMedication } from "../database/storage";
-import medications from "./medication.json";
+import medications from "../database/medication.json";
 import { useNavigation } from "@react-navigation/native";
 
 

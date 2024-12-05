@@ -35,6 +35,8 @@ const Homepage = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [isDayComplete, setIsDayComplete] = useState(false);
 
+    const [highlightedMedication, setHighlightedMedication] = useState(null);
+
     // Generate days for the calendar
     useEffect(() => {
         const generateDays = () => {
@@ -131,15 +133,16 @@ const Homepage = ({ navigation }) => {
             setMedications([...updatedMedications]);
             checkDayCompletion(updatedMedications);
             setModalVisible(false);
-            Alert.alert(
-                action === "confirm" ? "Confirmed" : "Skipped",
-                `${medication.medicationName} was ${action}.`
-            );
+
+            // Highlight the medication briefly
+            setHighlightedMedication(medication.id);
+            setTimeout(() => setHighlightedMedication(null), 1500);
         } catch (error) {
             console.error(`Error saving ${action} log:`, error);
             Alert.alert("Error", `Failed to save ${action} log.`);
         }
     };
+
 
     // Group medications by time
     const groupMedicationsByTime = () => {
@@ -221,10 +224,18 @@ const Homepage = ({ navigation }) => {
                 : "Confirmed, no time available";
         }
 
+        const isHighlighted = item.id === highlightedMedication;
+
         return (
-            <View
-                style={homepageStyles.medicationItem}
-                key={`${item.id}-${item.actionTime}`}
+            <TouchableOpacity
+                onPress={() => {
+                    setSelectedMedication(item);
+                    setModalVisible(true);
+                }}
+                style={[
+                    homepageStyles.medicationItem,
+                    isHighlighted ? homepageStyles.highlightedItem : null,
+                ]}
             >
                 <View style={homepageStyles.leftSection}>
                     <Image
@@ -240,17 +251,12 @@ const Homepage = ({ navigation }) => {
                         </Text>
                     </View>
                 </View>
-                <TouchableOpacity
-                    onPress={() => {
-                        setSelectedMedication(item);
-                        setModalVisible(true);
-                    }}
-                >
-                    <Image source={iconSource} style={homepageStyles.alertIcon} />
-                </TouchableOpacity>
-            </View>
+                <Image source={iconSource} style={homepageStyles.alertIcon} />
+            </TouchableOpacity>
         );
     };
+
+
 
     return (
         <View style={globalStyles.container}>
@@ -351,7 +357,7 @@ const Homepage = ({ navigation }) => {
                                         source={require("../assets/accept.png")}
                                         style={homepageStyles.modalIcon}
                                     />
-                                    <Text style={homepageStyles.actionButtonText}>Confirm</Text>
+                                    <Text style={homepageStyles.actionButtonText}>Taken</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={[homepageStyles.actionButton, homepageStyles.planButton]}

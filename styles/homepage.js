@@ -178,6 +178,12 @@ const homepageStyles = StyleSheet.create({
         color: "FFFFFF",
         marginTop: 10,
     },
+    highlightedItem: {
+        backgroundColor: "#e0ffe0",
+        borderColor: "#4caf50",
+        borderWidth: 2,
+    },
+
 });
 
 export default homepageStyles;
