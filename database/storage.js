@@ -5,6 +5,7 @@
 
 import { db } from './firebaseConfig';
 import { collection, addDoc, getDocs, deleteDoc, doc, query, where } from "firebase/firestore";
+import {updateDoc} from "@react-native-firebase/firestore";
 
 /**
  * Save a new medication to the "medications" collection in Firestore.
@@ -40,6 +41,55 @@ export const fetchMedications = async () => {
         return medications;
     } catch (error) {
         console.error("Error fetching medications:", error);
+        throw error;
+    }
+};
+
+export const saveLink = async (link) => {
+    try {
+        const docRef = await addDoc(collection(db, "links"), link);
+        console.log("Link successfully saved to Firebase with ID:", docRef.id);
+        return docRef.id;
+    } catch (error) {
+        console.error("Error saving link to Firebase:", error);
+        throw error;
+    }
+};
+
+export const fetchLinks = async () => {
+    try {
+        const linksCollection = collection(db, "links");
+        const snapshot = await getDocs(linksCollection);
+        const links = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
+        console.log("Links successfully fetched:", links);
+        return links;
+    } catch (error) {
+        console.error("Error fetching links:", error);
+        throw error;
+    }
+};
+
+export const updateLink = async (id, updatedData) => {
+    try {
+        const linkDoc = doc(db, "links", id);
+        await updateDoc(linkDoc, updatedData);
+        console.log("Link successfully updated with ID:", id);
+    } catch (error) {
+        console.error("Error updating link:", error);
+        throw error;
+    }
+};
+
+export const deleteLink = async (id) => {
+    try {
+        const linkDoc = doc(db, "links", id);
+        await deleteDoc(linkDoc);
+        console.log("Link successfully deleted with ID:", id);
+    } catch (error) {
+        console.error("Error deleting link:", error);
         throw error;
     }
 };
